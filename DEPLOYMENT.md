@@ -14,7 +14,9 @@ Create a Render Web Service from this repository.
 
 Use the repository root as the service root.
 
-Build command:
+If Render offers Docker for the service runtime, choose Docker. The repository includes a `Dockerfile` that builds and runs the Spring Boot backend.
+
+If using a non-Docker Java runtime elsewhere, use this build command:
 
 ```bash
 chmod +x mvnw && ./mvnw clean package -DskipTests
@@ -26,7 +28,7 @@ If you are building locally on Windows instead, use:
 .\mvnw.cmd clean package -DskipTests
 ```
 
-Start command:
+And this start command:
 
 ```bash
 java -jar target/collab-backend-0.0.1-SNAPSHOT.jar
