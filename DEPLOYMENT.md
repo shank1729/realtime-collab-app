@@ -6,7 +6,7 @@ This project has three deploy pieces:
 - React frontend
 - PostgreSQL database
 
-Render is the simplest first hosting target because it can run the backend, the frontend static build, and PostgreSQL from the same GitHub repository.
+Render is the simplest first hosting target for the backend and frontend. For PostgreSQL, use Neon so the free database does not expire after 30 days.
 
 ## Backend Service
 
@@ -35,9 +35,7 @@ java -jar target/collab-backend-0.0.1-SNAPSHOT.jar
 Environment variables:
 
 ```text
-DB_URL=jdbc:postgresql://<host>:<port>/<database>
-DB_USERNAME=<database-user>
-DB_PASSWORD=<database-password>
+DATABASE_URL=postgresql://<user>:<password>@<neon-host>/<database>?sslmode=require
 JWT_SECRET=<long-random-secret>
 JWT_EXPIRATION_MS=86400000
 CORS_ALLOWED_ORIGINS=https://<frontend-domain>
@@ -45,11 +43,19 @@ CORS_ALLOWED_ORIGINS=https://<frontend-domain>
 
 Render provides the runtime port through `PORT`; the backend reads it automatically.
 
+The backend also still supports traditional JDBC-style variables:
+
+```text
+DB_URL=jdbc:postgresql://<host>:<port>/<database>
+DB_USERNAME=<database-user>
+DB_PASSWORD=<database-password>
+```
+
 ## PostgreSQL
 
-Create a PostgreSQL database in the same hosting provider.
+Create a PostgreSQL database in Neon.
 
-Use the provider's internal database host/URL for `DB_URL` when available.
+Use the Neon connection string for `DATABASE_URL`. The backend converts Neon/Render-style `postgresql://...` URLs into Spring Boot JDBC datasource settings at startup.
 
 Flyway migrations run automatically when the backend starts, so the database can be empty on first deploy.
 
