@@ -3,6 +3,7 @@ package com.realtimecollab.config;
 import com.realtimecollab.security.CustomUserDetailsService;
 import com.realtimecollab.security.JwtService;
 import io.jsonwebtoken.JwtException;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.server.ServerHttpRequest;
 import org.springframework.http.server.ServerHttpResponse;
@@ -26,6 +27,7 @@ import org.springframework.web.socket.server.HandshakeInterceptor;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Arrays;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 
@@ -36,17 +38,22 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
     private final JwtService jwtService;
     private final CustomUserDetailsService userDetailsService;
+    private final String[] allowedOriginPatterns;
 
-    public WebSocketConfig(JwtService jwtService, CustomUserDetailsService userDetailsService) {
+    public WebSocketConfig(
+            JwtService jwtService,
+            CustomUserDetailsService userDetailsService,
+            @Value("${app.cors.allowed-origins}") String allowedOrigins) {
         this.jwtService = jwtService;
         this.userDetailsService = userDetailsService;
+        this.allowedOriginPatterns = parseAllowedOrigins(allowedOrigins);
     }
 
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
        
         registry.addEndpoint("/ws")
-                .setAllowedOriginPatterns("*")
+                .setAllowedOriginPatterns(allowedOriginPatterns)
                 .addInterceptors(new TokenHandshakeInterceptor())
                 .withSockJS();
     }
@@ -134,6 +141,13 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
     private String firstNativeHeader(StompHeaderAccessor accessor, String headerName) {
         List<String> values = accessor.getNativeHeader(headerName);
         return values == null || values.isEmpty() ? null : values.get(0);
+    }
+
+    private String[] parseAllowedOrigins(String allowedOrigins) {
+        return Arrays.stream(allowedOrigins.split(","))
+                .map(String::trim)
+                .filter(origin -> !origin.isBlank())
+                .toArray(String[]::new);
     }
 
     private static class TokenHandshakeInterceptor implements HandshakeInterceptor {

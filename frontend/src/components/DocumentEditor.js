@@ -6,6 +6,7 @@ import {
   getDocumentById,
   getDocumentHistory,
   getDocuments,
+  patchDocument,
   shareDocument,
 } from "../services/documentService";
 
@@ -51,6 +52,9 @@ export default function DocumentEditor({ session, onLogout }) {
   const [documents, setDocuments] = useState([]);
   const [selectedDocumentId, setSelectedDocumentId] = useState(null);
   const [title, setTitle] = useState("");
+  const [titleDraft, setTitleDraft] = useState("");
+  const [titleSaving, setTitleSaving] = useState(false);
+  const [titleStatus, setTitleStatus] = useState("");
   const [content, setContent] = useState("");
   const [updatedAt, setUpdatedAt] = useState("");
   const [collaborators, setCollaborators] = useState([]);
@@ -140,7 +144,10 @@ export default function DocumentEditor({ session, onLogout }) {
           getDocumentById(selectedDocumentId),
           getDocumentHistory(selectedDocumentId),
         ]);
-        setTitle(document.title || "Untitled document");
+        const loadedTitle = document.title || "Untitled document";
+        setTitle(loadedTitle);
+        setTitleDraft(loadedTitle);
+        setTitleStatus("");
         setContent(document.content || "");
         setUpdatedAt(document.updatedAt || document.createdAt || "");
         setCollaborators(document.collaborators || []);
@@ -224,6 +231,53 @@ export default function DocumentEditor({ session, onLogout }) {
         sendPresenceViewing(selectedDocumentId);
       }
     }, 300);
+  };
+
+  const handleTitleSubmit = async (event) => {
+    event.preventDefault();
+
+    if (!selectedDocumentId || !canEditDocument) {
+      setTitleStatus("Only owners and editors can rename this document.");
+      return;
+    }
+
+    const nextTitle = titleDraft.trim();
+    if (!nextTitle) {
+      setTitleStatus("Title cannot be empty.");
+      return;
+    }
+
+    if (nextTitle === title) {
+      setTitleStatus("Title already saved.");
+      return;
+    }
+
+    try {
+      setTitleSaving(true);
+      setTitleStatus("Saving title...");
+      const updatedDocument = await patchDocument(selectedDocumentId, {
+        title: nextTitle,
+      });
+      setTitle(updatedDocument.title || nextTitle);
+      setTitleDraft(updatedDocument.title || nextTitle);
+      setUpdatedAt(updatedDocument.updatedAt || new Date().toISOString());
+      setVersionNumber(updatedDocument.version ?? versionNumber);
+      setLastEditedByName(updatedDocument.lastEditedByName || lastEditedByName);
+      setCollaborators(updatedDocument.collaborators || collaborators);
+      setDocuments((prev) =>
+        prev.map((document) =>
+          document.id === updatedDocument.id
+            ? { ...document, ...updatedDocument }
+            : document
+        )
+      );
+      setTitleStatus("Title saved");
+      setSyncStatus("Document renamed");
+    } catch (renameError) {
+      setTitleStatus(renameError.message || "Unable to rename the document.");
+    } finally {
+      setTitleSaving(false);
+    }
   };
 
   const handleCreateDocument = async () => {
@@ -370,7 +424,36 @@ export default function DocumentEditor({ session, onLogout }) {
         <div className="editor-header">
           <div>
             <p className="editor-kicker">Real-time collaboration</p>
-            <h1>{title}</h1>
+            <form className="document-title-form" onSubmit={handleTitleSubmit}>
+              <label className="document-title-label" htmlFor="document-title">
+                Document title
+              </label>
+              <div className="document-title-row">
+                <input
+                  id="document-title"
+                  className="document-title-input"
+                  value={titleDraft}
+                  onChange={(event) => {
+                    setTitleDraft(event.target.value);
+                    setTitleStatus("");
+                  }}
+                  disabled={!canEditDocument || titleSaving}
+                  maxLength={255}
+                />
+                {canEditDocument ? (
+                  <button
+                    className="workspace-button document-title-button"
+                    type="submit"
+                    disabled={titleSaving || titleDraft.trim() === title}
+                  >
+                    {titleSaving ? "Saving" : "Save"}
+                  </button>
+                ) : null}
+              </div>
+              {titleStatus ? (
+                <p className="document-title-status">{titleStatus}</p>
+              ) : null}
+            </form>
             <p className="editor-meta">
               Signed in as {session.name} ({session.email})
             </p>

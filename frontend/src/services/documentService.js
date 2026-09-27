@@ -51,6 +51,13 @@ export function createDocument(payload) {
   });
 }
 
+export function patchDocument(documentId, payload) {
+  return fetchWithAuth(`/documents/${documentId}`, {
+    method: "PATCH",
+    body: JSON.stringify(payload),
+  });
+}
+
 export function shareDocument(documentId, email, role) {
   return fetchWithAuth(`/documents/${documentId}/share`, {
     method: "POST",

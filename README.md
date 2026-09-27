@@ -42,6 +42,8 @@ REACT_APP_WS_URL=http://localhost:8080/ws
 
 Create a local `frontend/.env` only if you need to override those values.
 
+For hosting setup, see [`DEPLOYMENT.md`](DEPLOYMENT.md).
+
 ## Backend
 
 `collab-backend` is a Spring Boot service for a simple real-time collaborative document editor. It provides:
@@ -160,6 +162,7 @@ Current settings:
 - password: `DB_PASSWORD`, defaulting to `postgres` for local development
 - JWT secret: `JWT_SECRET`, with a local development fallback
 - JWT expiry: `JWT_EXPIRATION_MS`, defaulting to 24 hours
+- allowed frontend origins: `CORS_ALLOWED_ORIGINS`, defaulting to `http://localhost:3000`
 - schema migrations: Flyway
 - Hibernate DDL mode: `validate`
 - SQL logging: enabled

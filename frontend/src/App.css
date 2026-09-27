@@ -1,9 +1,9 @@
 :root {
   color-scheme: light;
-  --page-bg: #f4f7fb;
-  --card-bg: rgba(255, 255, 255, 0.94);
-  --border: #d7e2f0;
-  --text: #15304b;
+  --page-bg: #f3f6f8;
+  --card-bg: #ffffff;
+  --border: #d9e2ea;
+  --text: #172433;
   --muted: #5f7388;
   --accent: #0f7b6c;
   --accent-soft: #dff7f1;
@@ -24,7 +24,8 @@
 body {
   margin: 0;
   font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-  background: var(--page-bg);
+  background:
+    linear-gradient(180deg, #eef4f7 0%, var(--page-bg) 280px);
   color: var(--text);
 }
 
@@ -34,7 +35,7 @@ body {
 
 .app-shell {
   min-height: 100vh;
-  padding: 24px 16px;
+  padding: 20px;
 }
 
 .workspace-layout,
@@ -45,18 +46,25 @@ body {
   gap: 20px;
 }
 
+.workspace-layout {
+  width: min(1400px, 100%);
+  margin: 0 auto;
+  align-items: stretch;
+}
+
 .auth-layout {
   min-height: 100vh;
   align-items: center;
 }
 
 .workspace-sidebar {
-  width: min(320px, 100%);
+  width: 310px;
+  flex: 0 0 310px;
   background: var(--sidebar-bg);
   color: var(--sidebar-text);
-  border-radius: 18px;
-  padding: 22px;
-  box-shadow: 0 16px 36px rgba(16, 24, 40, 0.14);
+  border-radius: 8px;
+  padding: 18px;
+  box-shadow: 0 14px 34px rgba(16, 24, 40, 0.12);
 }
 
 .workspace-sidebar-header h2 {
@@ -73,12 +81,19 @@ body {
   gap: 4px;
   width: 100%;
   border: 1px solid rgba(255, 255, 255, 0.12);
-  border-radius: 10px;
+  border-radius: 8px;
   padding: 14px;
   text-align: left;
   background: rgba(255, 255, 255, 0.06);
   color: inherit;
   cursor: pointer;
+}
+
+.workspace-list-item strong,
+.workspace-list-item span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .workspace-list-item span {
@@ -95,13 +110,19 @@ body {
 .auth-card {
   background: var(--card-bg);
   border: 1px solid var(--border);
-  border-radius: 18px;
-  box-shadow: 0 16px 36px rgba(31, 56, 88, 0.1);
+  border-radius: 8px;
+  box-shadow: 0 14px 34px rgba(31, 56, 88, 0.09);
 }
 
-.workspace-editor-card,
+.workspace-editor-card {
+  flex: 1;
+  min-width: 0;
+  width: auto;
+  padding: 24px;
+}
+
 .editor-card {
-  width: min(980px, 100%);
+  width: min(1040px, 100%);
   padding: 24px;
 }
 
@@ -122,6 +143,67 @@ body {
 .auth-card h1 {
   margin: 6px 0;
   font-size: 2rem;
+}
+
+.document-title-form {
+  display: grid;
+  gap: 8px;
+  margin: 6px 0 10px;
+}
+
+.document-title-label {
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--muted);
+  text-transform: uppercase;
+}
+
+.document-title-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 10px;
+  align-items: center;
+}
+
+.document-title-input {
+  width: 100%;
+  min-width: 0;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  padding: 9px 10px;
+  background: #f7fafc;
+  color: var(--text);
+  font: inherit;
+  font-size: 1.8rem;
+  font-weight: 750;
+  line-height: 1.15;
+}
+
+.document-title-input:disabled {
+  color: var(--text);
+  opacity: 1;
+}
+
+.document-title-input:not(:disabled):hover,
+.document-title-input:focus {
+  border-color: var(--border);
+  background: #fff;
+  outline: 2px solid rgba(15, 123, 108, 0.16);
+}
+
+.document-title-button {
+  min-width: 78px;
+}
+
+.document-title-button:disabled {
+  opacity: 0.55;
+  cursor: default;
+}
+
+.document-title-status {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.9rem;
 }
 
 .editor-kicker,
@@ -161,7 +243,7 @@ body {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  border-radius: 10px;
+  border-radius: 8px;
   padding: 10px 14px;
   font-size: 0.92rem;
   font-weight: 600;
@@ -219,7 +301,7 @@ body {
 .editor-banner,
 .auth-error {
   padding: 12px 14px;
-  border-radius: 10px;
+  border-radius: 8px;
 }
 
 .editor-banner {
@@ -251,7 +333,7 @@ body {
 .workspace-collaborators {
   padding: 14px;
   border: 1px solid var(--border);
-  border-radius: 12px;
+  border-radius: 8px;
   background: #fff;
 }
 
@@ -287,7 +369,7 @@ body {
   align-items: center;
   gap: 8px;
   padding: 8px 12px;
-  border-radius: 10px;
+  border-radius: 8px;
   background: #ecfdf5;
   color: #0f766e;
   font-size: 0.92rem;
@@ -330,7 +412,7 @@ body {
 .workspace-presence-card,
 .workspace-history-card {
   border: 1px solid var(--border);
-  border-radius: 12px;
+  border-radius: 8px;
   padding: 18px;
   background: #fff;
 }
@@ -353,7 +435,7 @@ body {
   gap: 10px;
   align-items: center;
   padding: 12px;
-  border-radius: 10px;
+  border-radius: 8px;
   background: #f8fbff;
   border: 1px solid #e1ebf7;
 }
@@ -385,7 +467,7 @@ body {
   display: grid;
   gap: 4px;
   padding: 12px;
-  border-radius: 10px;
+  border-radius: 8px;
   background: #f8fbff;
   border: 1px solid #e1ebf7;
 }
@@ -411,7 +493,7 @@ body {
   min-height: 360px;
   resize: vertical;
   border: 1px solid var(--border);
-  border-radius: 12px;
+  border-radius: 8px;
   padding: 18px;
   font: inherit;
   font-size: 1rem;
@@ -449,7 +531,7 @@ body {
 .auth-field input,
 .auth-field select {
   border: 1px solid var(--border);
-  border-radius: 10px;
+  border-radius: 8px;
   padding: 14px 15px;
   font: inherit;
   background: #fff;
@@ -458,7 +540,7 @@ body {
 .auth-submit,
 .auth-toggle {
   border: 0;
-  border-radius: 10px;
+  border-radius: 8px;
   padding: 14px 16px;
   font: inherit;
   font-weight: 700;
@@ -489,6 +571,7 @@ body {
   .workspace-sidebar,
   .workspace-editor-card {
     width: 100%;
+    flex-basis: auto;
   }
 }
 
@@ -497,14 +580,19 @@ body {
   .auth-card,
   .workspace-sidebar {
     padding: 18px;
-    border-radius: 18px;
+    border-radius: 8px;
   }
 
   .editor-header,
   .workspace-share-form,
-  .workspace-meta-row {
+  .workspace-meta-row,
+  .document-title-row {
     grid-template-columns: 1fr;
     flex-direction: column;
+  }
+
+  .document-title-input {
+    font-size: 1.45rem;
   }
 
   .workspace-editor-grid {
